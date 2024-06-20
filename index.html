@@ -2,22 +2,22 @@
 <html>
 
 <head>
-    <title>Health Data Form</title>
+    <title>Health Data Visualization</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        table {
-            border-collapse: collapse;
-            width: 100%;
+        .chart-container {
+            max-width: 800px;
+            margin: 0 auto;
         }
 
-        th,
-        td {
-            padding: 8px;
-            text-align: left;
-            border-bottom: 1px solid #ddd;
+        .button-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
         }
 
-        th {
-            background-color: #f2f2f2;
+        .button-container button {
+            margin: 0 10px;
         }
     </style>
 </head>
@@ -34,6 +34,17 @@
         <input type="submit" value="Submit">
     </form>
 
+    <div class="chart-container">
+        <canvas id="healthChart"></canvas>
+    </div>
+
+    <div class="button-container">
+        <button onclick="setRange(30)">30</button>
+        <button onclick="setRange(60)">60</button>
+        <button onclick="setRange(90)">90</button>
+        <button onclick="setRange(365)">365</button>
+    </div>
+
     <h2>Stored Data</h2>
     <table id="dataTable">
         <thead>
@@ -48,34 +59,107 @@
     </table>
 
     <script>
-        // Get the form element
-        const form = document.getElementById('healthForm');
+        const healthChart = new Chart(
+            document.getElementById('healthChart'),
+            {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [
+                        {
+                            label: 'Systolic',
+                            data: [],
+                            borderColor: 'red',
+                            backgroundColor: 'rgba(255, 0, 0, 0.2)',
+                            fill: false,
+                            lineTension: 0.1
+                        },
+                        {
+                            label: 'Diastolic',
+                            data: [],
+                            borderColor: 'blue',
+                            backgroundColor: 'rgba(0, 0, 255, 0.2)',
+                            fill: false,
+                            lineTension: 0.1
+                        },
+                        {
+                            label: 'Weight',
+                            data: [],
+                            borderColor: 'green',
+                            backgroundColor: 'rgba(0, 128, 0, 0.2)',
+                            fill: false,
+                            lineTension: 0.1
+                        }
+                    ]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: false
+                        }
+                    },
+                    responsive: true,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Health Data'
+                        }
+                    }
+                }
+            }
+        );
 
-        // Get the table body element
-        const tableBody = document.querySelector('#dataTable tbody');
+        function setRange(days) {
+            const startDate = new Date();
+            startDate.setDate(startDate.getDate() - days);
+            const storedData = JSON.parse(localStorage.getItem('healthData') || '[]');
+            const filteredData = storedData.filter(item => new Date(item.date) >= startDate);
 
-        // Function to add a new row to the table
-        function addRowToTable(date, systolic, diastolic, weight) {
-            const row = document.createElement('tr');
-            const dateCell = document.createElement('td');
-            const systolicCell = document.createElement('td');
-            const diastolicCell = document.createElement('td');
-            const weightCell = document.createElement('td');
+            const labels = filteredData.map(item => item.date);
+            const systolicData = filteredData.map(item => item.systolic);
+            const diastolicData = filteredData.map(item => item.diastolic);
+            const weightData = filteredData.map(item => item.weight);
 
-            dateCell.textContent = date;
-            systolicCell.textContent = systolic;
-            diastolicCell.textContent = diastolic;
-            weightCell.textContent = weight;
+            healthChart.data.labels = labels;
+            healthChart.data.datasets[0].data = systolicData;
+            healthChart.data.datasets[1].data = diastolicData;
+            healthChart.data.datasets[2].data = weightData;
+            healthChart.update();
 
-            row.appendChild(dateCell);
-            row.appendChild(systolicCell);
-            row.appendChild(diastolicCell);
-            row.appendChild(weightCell);
-
-            tableBody.appendChild(row);
+            populateTable(filteredData);
         }
 
+        function populateTable(data) {
+            const tableBody = document.getElementById('dataTable').getElementsByTagName('tbody')[0];
+            tableBody.innerHTML = '';
+
+            data.forEach(item => {
+                const row = document.createElement('tr');
+                const dateCell = document.createElement('td');
+                const systolicCell = document.createElement('td');
+                const diastolicCell = document.createElement('td');
+                const weightCell = document.createElement('td');
+
+                dateCell.textContent = item.date;
+                systolicCell.textContent = item.systolic;
+                diastolicCell.textContent = item.diastolic;
+                weightCell.textContent = item.weight;
+
+                row.appendChild(dateCell);
+                row.appendChild(systolicCell);
+                row.appendChild(diastolicCell);
+                row.appendChild(weightCell);
+
+                tableBody.appendChild(row);
+            });
+        }
+
+        // Load stored data from local storage and populate the table and chart
+        const storedData = JSON.parse(localStorage.getItem('healthData') || '[]');
+        setRange(90); // Set the initial range to 90 days
+
         // Add an event listener for form submission
+        const form = document.getElementById('healthForm');
         form.addEventListener('submit', function (event) {
             event.preventDefault(); // Prevent the form from submitting normally
 
@@ -88,18 +172,37 @@
             const currentDate = new Date().toLocaleDateString();
 
             // Store the data in the browser's local storage
-            const data = {
+            const newData = {
                 date: currentDate,
                 systolic,
                 diastolic,
                 weight
             };
-            const storedData = JSON.parse(localStorage.getItem('healthData') || '[]');
-            storedData.push(data);
+            storedData.push(newData);
             localStorage.setItem('healthData', JSON.stringify(storedData));
 
             // Add a new row to the table
-            addRowToTable(currentDate, systolic, diastolic, weight);
+            const tableBody = document.getElementById('dataTable').getElementsByTagName('tbody')[0];
+            const row = document.createElement('tr');
+            const dateCell = document.createElement('td');
+            const systolicCell = document.createElement('td');
+            const diastolicCell = document.createElement('td');
+            const weightCell = document.createElement('td');
+
+            dateCell.textContent = currentDate;
+            systolicCell.textContent = systolic;
+            diastolicCell.textContent = diastolic;
+            weightCell.textContent = weight;
+
+            row.appendChild(dateCell);
+            row.appendChild(systolicCell);
+            row.appendChild(diastolicCell);
+            row.appendChild(weightCell);
+
+            tableBody.appendChild(row);
+
+            // Update the chart with the new data
+            setRange(90); // Update the chart with the new data and the 90-day range
 
             // Clear the form fields
             document.getElementById('systolic').value = '';
@@ -107,12 +210,6 @@
             document.getElementById('weight').value = '';
 
             alert('Data saved to local storage!');
-        });
-
-        // Load stored data from local storage and populate the table
-        const storedData = JSON.parse(localStorage.getItem('healthData') || '[]');
-        storedData.forEach(data => {
-            addRowToTable(data.date, data.systolic, data.diastolic, data.weight);
         });
     </script>
 </body>
