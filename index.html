@@ -116,9 +116,36 @@
             const filteredData = storedData.filter(item => new Date(item.date) >= startDate);
 
             const labels = filteredData.map(item => item.date);
-            const systolicData = filteredData.map(item => item.systolic);
-            const diastolicData = filteredData.map(item => item.diastolic);
-            const weightData = filteredData.map(item => item.weight);
+            const systolicData = [];
+            const diastolicData = [];
+            const weightData = [];
+
+            let prevSystolic, prevDiastolic, prevWeight;
+
+            for (const item of filteredData) {
+                const { date, systolic, diastolic, weight } = item;
+
+                if (systolic !== undefined) {
+                    systolicData.push(systolic);
+                    prevSystolic = systolic;
+                } else {
+                    systolicData.push(prevSystolic || null);
+                }
+
+                if (diastolic !== undefined) {
+                    diastolicData.push(diastolic);
+                    prevDiastolic = diastolic;
+                } else {
+                    diastolicData.push(prevDiastolic || null);
+                }
+
+                if (weight !== undefined) {
+                    weightData.push(weight);
+                    prevWeight = weight;
+                } else {
+                    weightData.push(prevWeight || null);
+                }
+            }
 
             healthChart.data.labels = labels;
             healthChart.data.datasets[0].data = systolicData;
@@ -141,9 +168,9 @@
                 const weightCell = document.createElement('td');
 
                 dateCell.textContent = item.date;
-                systolicCell.textContent = item.systolic;
-                diastolicCell.textContent = item.diastolic;
-                weightCell.textContent = item.weight;
+                systolicCell.textContent = item.systolic || '';
+                diastolicCell.textContent = item.diastolic || '';
+                weightCell.textContent = item.weight || '';
 
                 row.appendChild(dateCell);
                 row.appendChild(systolicCell);
