@@ -95,9 +95,13 @@
                 options: {
                     scales: {
                         y: {
-                            beginAtZero: false
+                            beginAtZero: false,
+                            grid: {
+                                color: 'black' // Set the color of the horizontal grid lines to black
+                            }
                         }
                     },
+
                     responsive: true,
                     plugins: {
                         title: {
@@ -125,21 +129,21 @@
             for (const item of filteredData) {
                 const { date, systolic, diastolic, weight } = item;
 
-                if (systolic !== undefined) {
+                if (systolic !== null) {
                     systolicData.push(systolic);
                     prevSystolic = systolic;
                 } else {
                     systolicData.push(prevSystolic || null);
                 }
 
-                if (diastolic !== undefined) {
+                if (diastolic !== null) {
                     diastolicData.push(diastolic);
                     prevDiastolic = diastolic;
                 } else {
                     diastolicData.push(prevDiastolic || null);
                 }
 
-                if (weight !== undefined) {
+                if (weight !== null) {
                     weightData.push(weight);
                     prevWeight = weight;
                 } else {
