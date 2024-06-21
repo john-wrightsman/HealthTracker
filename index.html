@@ -32,6 +32,16 @@
         .responsive-table td {
             white-space: nowrap;
         }
+
+        .new-record {
+            background-color: #d4edda;
+            /* Light green */
+        }
+
+        .editing-record {
+            background-color: #fff3cd;
+            /* Light yellow */
+        }
     </style>
 </head>
 
@@ -52,7 +62,7 @@
         </div>
         <div class="form-group">
             <label for="weight">Weight:</label>
-            <input type="number" class="form-control" id="weight" name="weight" step="0.1" required>
+            <input type="number" step="0.1" class="form-control" id="weight" name="weight" required>
         </div>
         <input type="submit" class="btn btn-primary" value="Add/Update">
     </form>
@@ -147,7 +157,7 @@
             const startDate = new Date();
             startDate.setDate(startDate.getDate() - days);
             const storedData = JSON.parse(localStorage.getItem('healthData') || '[]');
-            const filteredData = storedData.filter(item => new Date(formatInternalDate(item.date)) >= startDate);
+            const filteredData = storedData.filter(item => new Date(item.date) >= startDate);
 
             const labels = filteredData.map(item => item.date);
             const systolicData = [];
@@ -207,7 +217,7 @@
             const tableBody = document.getElementById('dataTable').getElementsByTagName('tbody')[0];
             tableBody.innerHTML = '';
 
-            data.sort((a, b) => new Date(formatInternalDate(b.date)) - new Date(formatInternalDate(a.date)));
+            data.sort((a, b) => new Date(b.date) - new Date(a.date));
 
             data.forEach(item => {
                 const row = document.createElement('tr');
@@ -217,8 +227,8 @@
                 const deleteCell = document.createElement('td');
                 const deleteButton = document.createElement('button');
 
-                dateCell.innerHTML = `<a href="#" onclick="loadData('${item.date}')">${formatDisplayDate(item.date)}</a>`;
-                bpCell.textContent = item.systolic ? `${item.systolic || ''}/${item.diastolic || ''}` : '';
+                dateCell.innerHTML = `<a href="#" onclick="loadData('${item.date}')">${formatDateForDisplay(new Date(item.date))}</a>`;
+                bpCell.textContent = `${item.systolic || ''}/${item.diastolic || ''}`;
                 weightCell.textContent = item.weight || '';
                 deleteButton.textContent = 'X';
                 deleteButton.classList.add('btn', 'btn-danger', 'btn-sm');
@@ -247,7 +257,7 @@
             const systolic = document.getElementById('systolic').value;
             const diastolic = document.getElementById('diastolic').value;
             const weight = document.getElementById('weight').value;
-            const date = formatInternalDate(document.getElementById('date').value);
+            const date = document.getElementById('date').value;
 
             const existingDataIndex = storedData.findIndex(item => item.date === date);
 
@@ -271,29 +281,38 @@
 
             selectedRange = getSelectedRange();
             setRange(selectedRange);
+
+            setFieldColors();
         });
 
-        function formatInternalDate(date) {
-            const parts = date.split('-');
-            return `${parts[1]}/${parts[2]}/${parts[0]}`;
+        function formatDate(date) {
+            const year = date.getFullYear();
+            const month = ('0' + (date.getMonth() + 1)).slice(-2);
+            const day = ('0' + date.getDate()).slice(-2);
+            return `${year}-${month}-${day}`;
         }
 
-        function formatDisplayDate(date) {
-            const parts = date.split('/');
-            return `${parts[0]}/${parts[1]}/${parts[2].slice(-2)}`;
+        function formatDateForDisplay(date) {
+            const year = date.getFullYear().toString().slice(-2);
+            const month = ('0' + (date.getMonth() + 1)).slice(-2);
+            const day = ('0' + (date.getDate() + 1)).slice(-2); // Adjusted to handle timezone offset
+            return `${month}/${day}/${year}`;
         }
 
         function loadExistingData() {
-            const currentDate = formatInternalDate(new Date().toISOString().split('T')[0]);
+            const currentDate = formatDate(new Date());
             const existingData = storedData.find(item => item.date === currentDate);
 
-            document.getElementById('date').value = new Date().toISOString().split('T')[0];
+            document.getElementById('date').value = currentDate;
 
             if (existingData) {
                 document.getElementById('systolic').value = existingData.systolic;
                 document.getElementById('diastolic').value = existingData.diastolic;
                 document.getElementById('weight').value = existingData.weight;
                 form.querySelector('input[type="submit"]').value = 'Add/Update';
+                setFieldColors(true);
+            } else {
+                setFieldColors(false);
             }
         }
 
@@ -301,11 +320,12 @@
             const existingData = storedData.find(item => item.date === date);
 
             if (existingData) {
-                document.getElementById('date').value = new Date(existingData.date.split('/').reverse().join('-')).toISOString().split('T')[0];
+                document.getElementById('date').value = existingData.date;
                 document.getElementById('systolic').value = existingData.systolic;
                 document.getElementById('diastolic').value = existingData.diastolic;
                 document.getElementById('weight').value = existingData.weight;
                 form.querySelector('input[type="submit"]').value = 'Add/Update';
+                setFieldColors(true);
             }
         }
 
@@ -317,6 +337,14 @@
                 selectedRange = getSelectedRange();
                 setRange(selectedRange);
             }
+        }
+
+        function setFieldColors(isEditing = false) {
+            const inputs = document.querySelectorAll('#healthForm .form-control');
+            inputs.forEach(input => {
+                input.classList.remove('new-record', 'editing-record');
+                input.classList.add(isEditing ? 'editing-record' : 'new-record');
+            });
         }
 
         loadExistingData();
