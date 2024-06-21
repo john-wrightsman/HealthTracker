@@ -27,6 +27,11 @@
             background-color: #4CAF50;
             color: white;
         }
+
+        .responsive-table th,
+        .responsive-table td {
+            white-space: nowrap;
+        }
     </style>
 </head>
 
@@ -65,12 +70,11 @@
 
     <h2 class="text-center my-4">Stored Data</h2>
     <div class="table-responsive">
-        <table class="table table-striped" id="dataTable">
+        <table class="table table-striped responsive-table" id="dataTable">
             <thead>
                 <tr>
                     <th>Date</th>
-                    <th>Systolic</th>
-                    <th>Diastolic</th>
+                    <th>BP</th>
                     <th>Weight</th>
                     <th>Delete</th>
                 </tr>
@@ -208,15 +212,13 @@
             data.forEach(item => {
                 const row = document.createElement('tr');
                 const dateCell = document.createElement('td');
-                const systolicCell = document.createElement('td');
-                const diastolicCell = document.createElement('td');
+                const bpCell = document.createElement('td');
                 const weightCell = document.createElement('td');
                 const deleteCell = document.createElement('td');
                 const deleteButton = document.createElement('button');
 
                 dateCell.innerHTML = `<a href="#" onclick="loadData('${item.date}')">${item.date}</a>`;
-                systolicCell.textContent = item.systolic || '';
-                diastolicCell.textContent = item.diastolic || '';
+                bpCell.textContent = `${item.systolic || ''}/${item.diastolic || ''}`;
                 weightCell.textContent = item.weight || '';
                 deleteButton.textContent = 'X';
                 deleteButton.classList.add('btn', 'btn-danger', 'btn-sm');
@@ -225,8 +227,7 @@
                 deleteCell.appendChild(deleteButton);
 
                 row.appendChild(dateCell);
-                row.appendChild(systolicCell);
-                row.appendChild(diastolicCell);
+                row.appendChild(bpCell);
                 row.appendChild(weightCell);
                 row.appendChild(deleteCell);
 
@@ -273,10 +274,9 @@
         });
 
         function formatDate(date) {
-            const d = new Date(date);
-            const year = d.getFullYear();
-            const month = ('0' + (d.getMonth() + 1)).slice(-2);
-            const day = ('0' + d.getDate()).slice(-2);
+            const year = date.getFullYear();
+            const month = ('0' + (date.getMonth() + 1)).slice(-2);
+            const day = ('0' + date.getDate()).slice(-2);
             return `${year}-${month}-${day}`;
         }
 
