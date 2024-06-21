@@ -1,4 +1,2 @@
-- [ ] Make page look better on mobile
-- [ ] ask about making the form easier to fill out on mobile
-- [ ] load today's data if it already exists
-- [ ] Use a css library (ask for recommendations)
+- [ ] Needs to remember the last range button clicked after deleting record
+- [ ] Needs a date picker
