@@ -25,6 +25,8 @@
 <body>
     <h1>Health Data Form</h1>
     <form id="healthForm">
+        <label for="date">Date:</label>
+        <input type="text" id="date" name="date" readonly><br><br>
         <label for="systolic">Systolic:</label>
         <input type="number" id="systolic" name="systolic" required><br><br>
         <label for="diastolic">Diastolic:</label>
@@ -53,6 +55,7 @@
                 <th>Systolic</th>
                 <th>Diastolic</th>
                 <th>Weight</th>
+                <th>Delete</th>
             </tr>
         </thead>
         <tbody></tbody>
@@ -164,22 +167,32 @@
             const tableBody = document.getElementById('dataTable').getElementsByTagName('tbody')[0];
             tableBody.innerHTML = '';
 
+            // Sort data by date descending
+            data.sort((a, b) => new Date(b.date) - new Date(a.date));
+
             data.forEach(item => {
                 const row = document.createElement('tr');
                 const dateCell = document.createElement('td');
                 const systolicCell = document.createElement('td');
                 const diastolicCell = document.createElement('td');
                 const weightCell = document.createElement('td');
+                const deleteCell = document.createElement('td');
+                const deleteButton = document.createElement('button');
 
-                dateCell.textContent = item.date;
+                dateCell.innerHTML = `<a href="#" onclick="loadData('${item.date}')">${item.date}</a>`;
                 systolicCell.textContent = item.systolic || '';
                 diastolicCell.textContent = item.diastolic || '';
                 weightCell.textContent = item.weight || '';
+                deleteButton.textContent = 'X';
+                deleteButton.onclick = () => deleteRecord(item.date);
+
+                deleteCell.appendChild(deleteButton);
 
                 row.appendChild(dateCell);
                 row.appendChild(systolicCell);
                 row.appendChild(diastolicCell);
                 row.appendChild(weightCell);
+                row.appendChild(deleteCell);
 
                 tableBody.appendChild(row);
             });
@@ -198,17 +211,15 @@
             const systolic = document.getElementById('systolic').value;
             const diastolic = document.getElementById('diastolic').value;
             const weight = document.getElementById('weight').value;
-
-            // Get the current date
-            const currentDate = new Date().toLocaleDateString();
+            const date = document.getElementById('date').value;
 
             // Check if there is already data for the current date
-            const existingDataIndex = storedData.findIndex(item => item.date === currentDate);
+            const existingDataIndex = storedData.findIndex(item => item.date === date);
 
             if (existingDataIndex >= 0) {
                 // Update existing record
                 storedData[existingDataIndex] = {
-                    date: currentDate,
+                    date,
                     systolic,
                     diastolic,
                     weight
@@ -216,7 +227,7 @@
             } else {
                 // Add new record
                 storedData.push({
-                    date: currentDate,
+                    date,
                     systolic,
                     diastolic,
                     weight
@@ -228,23 +239,52 @@
 
             // Update the table and chart
             setRange(90);
-
-            // Clear the form fields
-            document.getElementById('systolic').value = '';
-            document.getElementById('diastolic').value = '';
-            document.getElementById('weight').value = '';
         });
+
+        // Function to format the date as yyyy-mm-dd
+        function formatDate(date) {
+            const d = new Date(date);
+            const year = d.getFullYear();
+            const month = ('0' + (d.getMonth() + 1)).slice(-2);
+            const day = ('0' + d.getDate()).slice(-2);
+            return `${year}-${month}-${day}`;
+        }
 
         // Function to check for existing data on page load and populate form if data exists
         function loadExistingData() {
-            const currentDate = new Date().toLocaleDateString();
+            const currentDate = formatDate(new Date());
             const existingData = storedData.find(item => item.date === currentDate);
+
+            document.getElementById('date').value = currentDate;
 
             if (existingData) {
                 document.getElementById('systolic').value = existingData.systolic;
                 document.getElementById('diastolic').value = existingData.diastolic;
                 document.getElementById('weight').value = existingData.weight;
                 form.querySelector('input[type="submit"]').value = 'Add/Update';
+            }
+        }
+
+        // Function to load data into the form for updating
+        function loadData(date) {
+            const existingData = storedData.find(item => item.date === date);
+
+            if (existingData) {
+                document.getElementById('date').value = existingData.date;
+                document.getElementById('systolic').value = existingData.systolic;
+                document.getElementById('diastolic').value = existingData.diastolic;
+                document.getElementById('weight').value = existingData.weight;
+                form.querySelector('input[type="submit"]').value = 'Add/Update';
+            }
+        }
+
+        // Function to delete a record
+        function deleteRecord(date) {
+            const index = storedData.findIndex(item => item.date === date);
+            if (index !== -1) {
+                storedData.splice(index, 1);
+                localStorage.setItem('healthData', JSON.stringify(storedData));
+                setRange(90);
             }
         }
 
