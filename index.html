@@ -3,6 +3,7 @@
 
 <head>
     <title>Health Data Visualization</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         .chart-container {
@@ -23,43 +24,53 @@
 </head>
 
 <body>
-    <h1>Health Data Form</h1>
-    <form id="healthForm">
-        <label for="date">Date:</label>
-        <input type="text" id="date" name="date" readonly><br><br>
-        <label for="systolic">Systolic:</label>
-        <input type="number" id="systolic" name="systolic" required><br><br>
-        <label for="diastolic">Diastolic:</label>
-        <input type="number" id="diastolic" name="diastolic" required><br><br>
-        <label for="weight">Weight:</label>
-        <input type="number" id="weight" name="weight" required><br><br>
-        <input type="submit" value="Add/Update">
-    </form>
+    <div class="container">
+        <h1>Health Data Form</h1>
+        <form id="healthForm">
+            <div class="form-group">
+                <label for="date">Date:</label>
+                <input type="text" class="form-control" id="date" name="date" readonly>
+            </div>
+            <div class="form-group">
+                <label for="systolic">Systolic:</label>
+                <input type="number" class="form-control" id="systolic" name="systolic" required>
+            </div>
+            <div class="form-group">
+                <label for="diastolic">Diastolic:</label>
+                <input type="number" class="form-control" id="diastolic" name="diastolic" required>
+            </div>
+            <div class="form-group">
+                <label for="weight">Weight:</label>
+                <input type="number" class="form-control" id="weight" name="weight" required>
+            </div>
+            <input type="submit" class="btn btn-primary" value="Add/Update">
+        </form>
 
-    <div class="chart-container">
-        <canvas id="healthChart"></canvas>
+        <div class="chart-container">
+            <canvas id="healthChart"></canvas>
+        </div>
+
+        <div class="button-container">
+            <button class="btn btn-outline-secondary" onclick="setRange(30)">30</button>
+            <button class="btn btn-outline-secondary" onclick="setRange(60)">60</button>
+            <button class="btn btn-outline-secondary" onclick="setRange(90)">90</button>
+            <button class="btn btn-outline-secondary" onclick="setRange(365)">365</button>
+        </div>
+
+        <h2>Stored Data</h2>
+        <table id="dataTable" class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Systolic</th>
+                    <th>Diastolic</th>
+                    <th>Weight</th>
+                    <th>Delete</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
     </div>
-
-    <div class="button-container">
-        <button onclick="setRange(30)">30</button>
-        <button onclick="setRange(60)">60</button>
-        <button onclick="setRange(90)">90</button>
-        <button onclick="setRange(365)">365</button>
-    </div>
-
-    <h2>Stored Data</h2>
-    <table id="dataTable">
-        <thead>
-            <tr>
-                <th>Date</th>
-                <th>Systolic</th>
-                <th>Diastolic</th>
-                <th>Weight</th>
-                <th>Delete</th>
-            </tr>
-        </thead>
-        <tbody></tbody>
-    </table>
 
     <script>
         const healthChart = new Chart(
