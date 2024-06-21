@@ -55,6 +55,7 @@
             background-color: #a4d0ff;
             padding: 5px;
             border-radius: 5px;
+            margin-top: .5em;
         }
 
         .header::before {
@@ -110,7 +111,7 @@
 
     <div class="divider"></div>
 
-    <h2 class="text-center my-4 small-heading">Past Measurements</h2>
+    <h2 class="text-center my-4 small-heading">History</h2>
     <div class="table-responsive">
         <table class="table table-striped responsive-table" id="dataTable">
             <thead>
@@ -172,7 +173,10 @@
                     plugins: {
                         title: {
                             display: true,
-                            text: 'Health Data'
+                            text: 'Health Data',
+                            font: {
+                                size: 24
+                            }
                         }
                     }
                 }
@@ -227,6 +231,7 @@
             healthChart.data.datasets[0].data = systolicData;
             healthChart.data.datasets[1].data = diastolicData;
             healthChart.data.datasets[2].data = weightData;
+            healthChart.options.plugins.title.text = `Health Data for ${days} Days`;
             healthChart.update();
 
             populateTable(filteredData);
