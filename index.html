@@ -1,7 +1,8 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
+    <meta charset="UTF-8">
     <title>Health Data Visualization</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
@@ -21,45 +22,50 @@
         .button-container button {
             margin: 0 10px;
         }
+
+        .active-button {
+            background-color: #4CAF50;
+            color: white;
+        }
     </style>
 </head>
 
-<body>
-    <div class="container">
-        <h1>Health Data Form</h1>
-        <form id="healthForm">
-            <div class="form-group">
-                <label for="date">Date:</label>
-                <input type="text" class="form-control" id="date" name="date" readonly>
-            </div>
-            <div class="form-group">
-                <label for="systolic">Systolic:</label>
-                <input type="number" class="form-control" id="systolic" name="systolic" required>
-            </div>
-            <div class="form-group">
-                <label for="diastolic">Diastolic:</label>
-                <input type="number" class="form-control" id="diastolic" name="diastolic" required>
-            </div>
-            <div class="form-group">
-                <label for="weight">Weight:</label>
-                <input type="number" class="form-control" id="weight" name="weight" required>
-            </div>
-            <input type="submit" class="btn btn-primary" value="Add/Update">
-        </form>
-
-        <div class="chart-container">
-            <canvas id="healthChart"></canvas>
+<body class="container">
+    <h1 class="text-center my-4">Health Data Form</h1>
+    <form id="healthForm" class="mb-4">
+        <div class="form-group">
+            <label for="date">Date:</label>
+            <input type="text" class="form-control" id="date" name="date" readonly>
         </div>
-
-        <div class="button-container">
-            <button class="btn btn-outline-secondary" onclick="setRange(30)">30</button>
-            <button class="btn btn-outline-secondary" onclick="setRange(60)">60</button>
-            <button class="btn btn-outline-secondary" onclick="setRange(90)">90</button>
-            <button class="btn btn-outline-secondary" onclick="setRange(365)">365</button>
+        <div class="form-group">
+            <label for="systolic">Systolic:</label>
+            <input type="number" class="form-control" id="systolic" name="systolic" required>
         </div>
+        <div class="form-group">
+            <label for="diastolic">Diastolic:</label>
+            <input type="number" class="form-control" id="diastolic" name="diastolic" required>
+        </div>
+        <div class="form-group">
+            <label for="weight">Weight:</label>
+            <input type="number" class="form-control" id="weight" name="weight" required>
+        </div>
+        <input type="submit" class="btn btn-primary" value="Add/Update">
+    </form>
 
-        <h2>Stored Data</h2>
-        <table id="dataTable" class="table table-striped">
+    <div class="chart-container">
+        <canvas id="healthChart"></canvas>
+    </div>
+
+    <div class="button-container my-4">
+        <button id="button30" class="btn btn-outline-primary" onclick="setRange(30)">30</button>
+        <button id="button60" class="btn btn-outline-primary" onclick="setRange(60)">60</button>
+        <button id="button90" class="btn btn-outline-primary" onclick="setRange(90)">90</button>
+        <button id="button365" class="btn btn-outline-primary" onclick="setRange(365)">365</button>
+    </div>
+
+    <h2 class="text-center my-4">Stored Data</h2>
+    <div class="table-responsive">
+        <table class="table table-striped" id="dataTable">
             <thead>
                 <tr>
                     <th>Date</th>
@@ -112,11 +118,10 @@
                         y: {
                             beginAtZero: false,
                             grid: {
-                                color: 'black' // Set the color of the horizontal grid lines to black
+                                color: 'black'
                             }
                         }
                     },
-
                     responsive: true,
                     plugins: {
                         title: {
@@ -128,7 +133,13 @@
             }
         );
 
+        function getSelectedRange() {
+            return parseInt(localStorage.getItem('selectedRange')) || 90;
+        }
+
         function setRange(days) {
+            localStorage.setItem('selectedRange', days);
+
             const startDate = new Date();
             startDate.setDate(startDate.getDate() - days);
             const storedData = JSON.parse(localStorage.getItem('healthData') || '[]');
@@ -173,13 +184,25 @@
             healthChart.update();
 
             populateTable(filteredData);
+
+            highlightButton(days);
+        }
+
+        function highlightButton(days) {
+            document.querySelectorAll('.button-container button').forEach(button => {
+                button.classList.remove('active-button');
+            });
+
+            const selectedButton = document.getElementById(`button${days}`);
+            if (selectedButton) {
+                selectedButton.classList.add('active-button');
+            }
         }
 
         function populateTable(data) {
             const tableBody = document.getElementById('dataTable').getElementsByTagName('tbody')[0];
             tableBody.innerHTML = '';
 
-            // Sort data by date descending
             data.sort((a, b) => new Date(b.date) - new Date(a.date));
 
             data.forEach(item => {
@@ -196,6 +219,7 @@
                 diastolicCell.textContent = item.diastolic || '';
                 weightCell.textContent = item.weight || '';
                 deleteButton.textContent = 'X';
+                deleteButton.classList.add('btn', 'btn-danger', 'btn-sm');
                 deleteButton.onclick = () => deleteRecord(item.date);
 
                 deleteCell.appendChild(deleteButton);
@@ -210,26 +234,23 @@
             });
         }
 
-        // Load stored data from local storage and populate the table and chart
         const storedData = JSON.parse(localStorage.getItem('healthData') || '[]');
-        setRange(90); // Set the initial range to 90 days
+        let selectedRange = getSelectedRange();
 
-        // Add an event listener for form submission
+        setRange(selectedRange);
+
         const form = document.getElementById('healthForm');
         form.addEventListener('submit', function (event) {
-            event.preventDefault(); // Prevent the form from submitting normally
+            event.preventDefault();
 
-            // Get the form data
             const systolic = document.getElementById('systolic').value;
             const diastolic = document.getElementById('diastolic').value;
             const weight = document.getElementById('weight').value;
             const date = document.getElementById('date').value;
 
-            // Check if there is already data for the current date
             const existingDataIndex = storedData.findIndex(item => item.date === date);
 
             if (existingDataIndex >= 0) {
-                // Update existing record
                 storedData[existingDataIndex] = {
                     date,
                     systolic,
@@ -237,7 +258,6 @@
                     weight
                 };
             } else {
-                // Add new record
                 storedData.push({
                     date,
                     systolic,
@@ -246,14 +266,12 @@
                 });
             }
 
-            // Store the data in the browser's local storage
             localStorage.setItem('healthData', JSON.stringify(storedData));
 
-            // Update the table and chart
-            setRange(90);
+            selectedRange = getSelectedRange();
+            setRange(selectedRange);
         });
 
-        // Function to format the date as yyyy-mm-dd
         function formatDate(date) {
             const d = new Date(date);
             const year = d.getFullYear();
@@ -262,7 +280,6 @@
             return `${year}-${month}-${day}`;
         }
 
-        // Function to check for existing data on page load and populate form if data exists
         function loadExistingData() {
             const currentDate = formatDate(new Date());
             const existingData = storedData.find(item => item.date === currentDate);
@@ -277,7 +294,6 @@
             }
         }
 
-        // Function to load data into the form for updating
         function loadData(date) {
             const existingData = storedData.find(item => item.date === date);
 
@@ -290,17 +306,16 @@
             }
         }
 
-        // Function to delete a record
         function deleteRecord(date) {
             const index = storedData.findIndex(item => item.date === date);
             if (index !== -1) {
                 storedData.splice(index, 1);
                 localStorage.setItem('healthData', JSON.stringify(storedData));
-                setRange(90);
+                selectedRange = getSelectedRange();
+                setRange(selectedRange);
             }
         }
 
-        // Load existing data on page load
         loadExistingData();
     </script>
 </body>
