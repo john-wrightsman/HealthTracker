@@ -68,10 +68,32 @@
             height: .25em;
             background-color: #c6c6c6;
         }
+
+        #alertContainer {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1050;
+            /* Higher than most elements to ensure visibility */
+            display: none;
+            /* Hidden by default */
+            width: 80%;
+            max-width: 500px;
+            margin-bottom: 1em;
+        }
     </style>
 </head>
 
 <body class="container">
+    <div id="alertContainer" class="alert alert-success alert-dismissible fade show" role="alert"
+        style="display: none;">
+        <span id="alertMessage"></span>
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+
     <h1 class="text-center medium-heading header">Health Tracker</h1>
 
     <!-- Tabs navigation -->

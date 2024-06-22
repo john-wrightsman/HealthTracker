@@ -175,6 +175,7 @@ form.addEventListener('submit', function (event) {
             diastolic,
             weight
         };
+        showAlert('Record Added');
     } else {
         storedData.push({
             date,
@@ -182,6 +183,7 @@ form.addEventListener('submit', function (event) {
             diastolic,
             weight
         });
+        showAlert('Record Updated');
     }
 
     localStorage.setItem('healthData', JSON.stringify(storedData));
@@ -244,7 +246,10 @@ function deleteRecord(date) {
         localStorage.setItem('healthData', JSON.stringify(storedData));
         selectedRange = getSelectedRange();
         setRange(selectedRange);
-        populateTable(storedData); // Refresh the table to show all records
+        populateTable(storedData);
+        showAlert('Record Deleted');
+    } else {
+        showAlert('Record does not exist');
     }
 }
 
@@ -254,6 +259,27 @@ function setFieldColors(isEditing = false) {
         input.classList.remove('new-record', 'editing-record');
         input.classList.add(isEditing ? 'editing-record' : 'new-record');
     });
+}
+
+function showAlert(message) {
+    const alertContainer = document.getElementById('alertContainer');
+    const alertMessage = document.getElementById('alertMessage');
+
+    alertMessage.textContent = message;
+    alertContainer.style.display = 'block';
+
+    // Automatically hide the alert after 3 seconds
+    setTimeout(() => {
+        closeAlert();
+    }, 3000);
+}
+
+function closeAlert() {
+    const alertContainer = document.getElementById('alertContainer');
+    alertContainer.classList.remove('show'); // Close the alert
+    setTimeout(() => {
+        // alertContainer.style.display = 'none';
+    }, 150); // Match this to the Bootstrap transition duration
 }
 
 loadExistingData();
