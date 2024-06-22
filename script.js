@@ -105,8 +105,6 @@ function setRange(days) {
     healthChart.options.plugins.title.text = `Health Data for ${days} Days`;
     healthChart.update();
 
-    populateTable(filteredData);
-
     highlightButton(days);
 }
 
@@ -157,6 +155,7 @@ const storedData = JSON.parse(localStorage.getItem('healthData') || '[]');
 let selectedRange = getSelectedRange();
 
 setRange(selectedRange);
+populateTable(storedData); // Always show all records in the table
 
 const form = document.getElementById('healthForm');
 form.addEventListener('submit', function (event) {
@@ -189,6 +188,7 @@ form.addEventListener('submit', function (event) {
 
     selectedRange = getSelectedRange();
     setRange(selectedRange);
+    populateTable(storedData); // Refresh the table to show all records
 
     setFieldColors();
 });
@@ -244,6 +244,7 @@ function deleteRecord(date) {
         localStorage.setItem('healthData', JSON.stringify(storedData));
         selectedRange = getSelectedRange();
         setRange(selectedRange);
+        populateTable(storedData); // Refresh the table to show all records
     }
 }
 

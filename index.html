@@ -85,6 +85,10 @@
                 aria-selected="false">Chart</a>
         </li>
         <li class="nav-item" role="presentation">
+            <a class="nav-link" id="history-tab" data-toggle="tab" href="#history" role="tab" aria-controls="history"
+                aria-selected="false">History</a>
+        </li>
+        <li class="nav-item" role="presentation">
             <a class="nav-link" id="config-tab" data-toggle="tab" href="#config" role="tab" aria-controls="config"
                 aria-selected="false">Configuration</a>
         </li>
@@ -114,21 +118,6 @@
             </form>
 
             <div class="divider"></div>
-
-            <h2 class="text-center my-4 small-heading">History</h2>
-            <div class="table-responsive">
-                <table class="table table-striped responsive-table" id="dataTable">
-                    <thead>
-                        <tr>
-                            <th>Date</th>
-                            <th>BP</th>
-                            <th>Weight</th>
-                            <th>Delete</th>
-                        </tr>
-                    </thead>
-                    <tbody></tbody>
-                </table>
-            </div>
         </div>
 
         <!-- Chart tab content -->
@@ -142,6 +131,24 @@
                 <button id="button60" class="btn btn-outline-primary" onclick="setRange(60)">60</button>
                 <button id="button90" class="btn btn-outline-primary" onclick="setRange(90)">90</button>
                 <button id="button365" class="btn btn-outline-primary" onclick="setRange(365)">365</button>
+            </div>
+        </div>
+
+        <!-- History tab content -->
+        <div class="tab-pane fade" id="history" role="tabpanel" aria-labelledby="history-tab">
+            <h2 class="text-center my-4 small-heading">History</h2>
+            <div class="table-responsive">
+                <table class="table table-striped responsive-table" id="dataTable">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>BP</th>
+                            <th>Weight</th>
+                            <th>Delete</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
             </div>
         </div>
 
