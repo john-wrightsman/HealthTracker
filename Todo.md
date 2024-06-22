@@ -1,2 +1,2 @@
-- [ ] Needs to remember the last range button clicked after deleting record
-- [ ] Needs a date picker
+- [ ] put elements in tabs
+- [ ] make it so swiping left or right switches tabs

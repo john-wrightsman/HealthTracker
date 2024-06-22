@@ -1,0 +1,263 @@
+const healthChart = new Chart(
+    document.getElementById('healthChart'),
+    {
+        type: 'line',
+        data: {
+            labels: [],
+            datasets: [
+                {
+                    label: 'Systolic',
+                    data: [],
+                    borderColor: 'red',
+                    backgroundColor: 'rgba(255, 0, 0, 0.2)',
+                    fill: false,
+                    lineTension: 0.1
+                },
+                {
+                    label: 'Diastolic',
+                    data: [],
+                    borderColor: 'blue',
+                    backgroundColor: 'rgba(0, 0, 255, 0.2)',
+                    fill: false,
+                    lineTension: 0.1
+                },
+                {
+                    label: 'Weight',
+                    data: [],
+                    borderColor: 'green',
+                    backgroundColor: 'rgba(0, 128, 0, 0.2)',
+                    fill: false,
+                    lineTension: 0.1
+                }
+            ]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: false,
+                    grid: {
+                        color: 'black'
+                    }
+                }
+            },
+            responsive: true,
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'Health Data',
+                    font: {
+                        size: 24
+                    }
+                }
+            }
+        }
+    }
+);
+
+function getSelectedRange() {
+    return parseInt(localStorage.getItem('selectedRange')) || 90;
+}
+
+function setRange(days) {
+    localStorage.setItem('selectedRange', days);
+
+    const startDate = new Date();
+    startDate.setDate(startDate.getDate() - days);
+    const storedData = JSON.parse(localStorage.getItem('healthData') || '[]');
+    const filteredData = storedData.filter(item => new Date(item.date) >= startDate);
+
+    const labels = filteredData.map(item => item.date);
+    const systolicData = [];
+    const diastolicData = [];
+    const weightData = [];
+
+    let prevSystolic, prevDiastolic, prevWeight;
+
+    for (const item of filteredData) {
+        const { date, systolic, diastolic, weight } = item;
+
+        if (systolic !== null) {
+            systolicData.push(systolic);
+            prevSystolic = systolic;
+        } else {
+            systolicData.push(prevSystolic || null);
+        }
+
+        if (diastolic !== null) {
+            diastolicData.push(diastolic);
+            prevDiastolic = diastolic;
+        } else {
+            diastolicData.push(prevDiastolic || null);
+        }
+
+        if (weight !== null) {
+            weightData.push(weight);
+            prevWeight = weight;
+        } else {
+            weightData.push(prevWeight || null);
+        }
+    }
+
+    healthChart.data.labels = labels;
+    healthChart.data.datasets[0].data = systolicData;
+    healthChart.data.datasets[1].data = diastolicData;
+    healthChart.data.datasets[2].data = weightData;
+    healthChart.options.plugins.title.text = `Health Data for ${days} Days`;
+    healthChart.update();
+
+    populateTable(filteredData);
+
+    highlightButton(days);
+}
+
+function highlightButton(days) {
+    document.querySelectorAll('.button-container button').forEach(button => {
+        button.classList.remove('active-button');
+    });
+
+    const selectedButton = document.getElementById(`button${days}`);
+    if (selectedButton) {
+        selectedButton.classList.add('active-button');
+    }
+}
+
+function populateTable(data) {
+    const tableBody = document.getElementById('dataTable').getElementsByTagName('tbody')[0];
+    tableBody.innerHTML = '';
+
+    data.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+    data.forEach(item => {
+        const row = document.createElement('tr');
+        const dateCell = document.createElement('td');
+        const bpCell = document.createElement('td');
+        const weightCell = document.createElement('td');
+        const deleteCell = document.createElement('td');
+        const deleteButton = document.createElement('button');
+
+        dateCell.innerHTML = `<a href="#" onclick="loadData('${item.date}')">${formatDateForDisplay(new Date(item.date))}</a>`;
+        bpCell.textContent = `${item.systolic || ''}/${item.diastolic || ''}`;
+        weightCell.textContent = item.weight || '';
+        deleteButton.textContent = 'X';
+        deleteButton.classList.add('btn', 'btn-danger', 'btn-sm');
+        deleteButton.onclick = () => deleteRecord(item.date);
+
+        deleteCell.appendChild(deleteButton);
+
+        row.appendChild(dateCell);
+        row.appendChild(bpCell);
+        row.appendChild(weightCell);
+        row.appendChild(deleteCell);
+
+        tableBody.appendChild(row);
+    });
+}
+
+const storedData = JSON.parse(localStorage.getItem('healthData') || '[]');
+let selectedRange = getSelectedRange();
+
+setRange(selectedRange);
+
+const form = document.getElementById('healthForm');
+form.addEventListener('submit', function (event) {
+    event.preventDefault();
+
+    const systolic = document.getElementById('systolic').value;
+    const diastolic = document.getElementById('diastolic').value;
+    const weight = document.getElementById('weight').value;
+    const date = document.getElementById('date').value;
+
+    const existingDataIndex = storedData.findIndex(item => item.date === date);
+
+    if (existingDataIndex >= 0) {
+        storedData[existingDataIndex] = {
+            date,
+            systolic,
+            diastolic,
+            weight
+        };
+    } else {
+        storedData.push({
+            date,
+            systolic,
+            diastolic,
+            weight
+        });
+    }
+
+    localStorage.setItem('healthData', JSON.stringify(storedData));
+
+    selectedRange = getSelectedRange();
+    setRange(selectedRange);
+
+    setFieldColors();
+});
+
+function formatDate(date) {
+    const year = date.getFullYear();
+    const month = ('0' + (date.getMonth() + 1)).slice(-2);
+    const day = ('0' + date.getDate()).slice(-2);
+    return `${year}-${month}-${day}`;
+}
+
+function formatDateForDisplay(date) {
+    const year = date.getFullYear().toString().slice(-2);
+    const month = ('0' + (date.getMonth() + 1)).slice(-2);
+    const day = ('0' + (date.getDate() + 1)).slice(-2); // Adjusted to handle timezone offset
+    return `${month}/${day}/${year}`;
+}
+
+function loadExistingData() {
+    const currentDate = formatDate(new Date());
+    const existingData = storedData.find(item => item.date === currentDate);
+
+    document.getElementById('date').value = currentDate;
+
+    if (existingData) {
+        document.getElementById('systolic').value = existingData.systolic;
+        document.getElementById('diastolic').value = existingData.diastolic;
+        document.getElementById('weight').value = existingData.weight;
+        form.querySelector('input[type="submit"]').value = 'Add/Update';
+        setFieldColors(true);
+    } else {
+        setFieldColors(false);
+    }
+}
+
+function loadData(date) {
+    const existingData = storedData.find(item => item.date === date);
+
+    if (existingData) {
+        document.getElementById('date').value = existingData.date;
+        document.getElementById('systolic').value = existingData.systolic;
+        document.getElementById('diastolic').value = existingData.diastolic;
+        document.getElementById('weight').value = existingData.weight;
+        form.querySelector('input[type="submit"]').value = 'Add/Update';
+        setFieldColors(true);
+    }
+}
+
+function deleteRecord(date) {
+    const index = storedData.findIndex(item => item.date === date);
+    if (index !== -1) {
+        storedData.splice(index, 1);
+        localStorage.setItem('healthData', JSON.stringify(storedData));
+        selectedRange = getSelectedRange();
+        setRange(selectedRange);
+    }
+}
+
+function setFieldColors(isEditing = false) {
+    const inputs = document.querySelectorAll('#healthForm .form-control');
+    inputs.forEach(input => {
+        input.classList.remove('new-record', 'editing-record');
+        input.classList.add(isEditing ? 'editing-record' : 'new-record');
+    });
+}
+
+loadExistingData();
+
+// Resize chart when Chart tab is shown
+document.getElementById('chart-tab').addEventListener('shown.bs.tab', function (e) {
+    healthChart.resize();
+});
