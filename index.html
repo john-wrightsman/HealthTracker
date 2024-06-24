@@ -7,6 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://apis.google.com/js/api.js"></script>
     <style>
         .chart-container {
             max-width: 800px;
@@ -176,7 +177,22 @@
 
         <!-- Configuration tab content -->
         <div class="tab-pane fade" id="config" role="tabpanel" aria-labelledby="config-tab">
-            <p>Configuration settings will be added here in the future.</p>
+            <h2 class="text-center my-4 small-heading">Configuration</h2>
+            <form id="configForm" class="mb-4">
+                <div class="form-group">
+                    <label for="apiKey">Google API Key:</label>
+                    <input type="text" class="form-control" id="apiKey" name="apiKey" required>
+                </div>
+                <div class="form-group">
+                    <label for="clientId">Client ID:</label>
+                    <input type="text" class="form-control" id="clientId" name="clientId" required>
+                </div>
+                <div class="form-group">
+                    <label for="sheetsId">Google Sheets ID:</label>
+                    <input type="text" class="form-control" id="sheetsId" name="sheetsId" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Save Configuration</button>
+            </form>
         </div>
     </div>
 

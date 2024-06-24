@@ -166,32 +166,18 @@ form.addEventListener('submit', function (event) {
     const weight = document.getElementById('weight').value;
     const date = document.getElementById('date').value;
 
-    const existingDataIndex = storedData.findIndex(item => item.date === date);
+    const values = [
+        [date, systolic, diastolic, weight]
+    ];
 
-    if (existingDataIndex >= 0) {
-        storedData[existingDataIndex] = {
-            date,
-            systolic,
-            diastolic,
-            weight
-        };
-        showAlert('Record Added');
-    } else {
-        storedData.push({
-            date,
-            systolic,
-            diastolic,
-            weight
-        });
-        showAlert('Record Updated');
-    }
+    const spreadsheetId = localStorage.getItem('sheetsId');
+    const range = 'Sheet1!A:D';
 
-    localStorage.setItem('healthData', JSON.stringify(storedData));
+    appendData(spreadsheetId, range, values);  // Use appendData or updateData as needed
 
-    selectedRange = getSelectedRange();
+    showAlert('Record Added/Updated');
     setRange(selectedRange);
-    populateTable(storedData); // Refresh the table to show all records
-
+    populateTable(storedData);
     setFieldColors();
 });
 
@@ -281,6 +267,120 @@ function closeAlert() {
         // alertContainer.style.display = 'none';
     }, 150); // Match this to the Bootstrap transition duration
 }
+
+function loadClient() {
+    let apiKey = localStorage.getItem('apiKey');
+    gapi.client.setApiKey(apiKey);
+    return gapi.client.load("https://sheets.googleapis.com/$discovery/rest?version=v4")
+        .then(function () { console.log("GAPI client loaded for API"); },
+            function (err) { console.error("Error loading GAPI client for API", err); });
+}
+
+function authenticate() {
+    return gapi.auth2.getAuthInstance()
+        .signIn({ scope: "https://www.googleapis.com/auth/spreadsheets" })
+        .then(function () { console.log("Sign-in successful"); },
+            function (err) { console.error("Error signing in", err); });
+}
+
+gapi.load("client:auth2", function () {
+    gapi.auth2.init({ client_id: localStorage.getItem('clientId') });
+});
+
+function appendData(spreadsheetId, range, values) {
+    const params = {
+        spreadsheetId: spreadsheetId,
+        range: range,
+        valueInputOption: 'RAW',
+    };
+
+    const valueRangeBody = {
+        range: range,
+        majorDimension: 'ROWS',
+        values: values,
+    };
+
+    gapi.client.sheets.spreadsheets.values.append(params, valueRangeBody)
+        .then((response) => {
+            console.log(response.result);
+        });
+}
+
+function updateData(spreadsheetId, range, values) {
+    const params = {
+        spreadsheetId: spreadsheetId,
+        range: range,
+        valueInputOption: 'RAW',
+    };
+
+    const valueRangeBody = {
+        range: range,
+        majorDimension: 'ROWS',
+        values: values,
+    };
+
+    gapi.client.sheets.spreadsheets.values.update(params, valueRangeBody)
+        .then((response) => {
+            console.log(response.result);
+        });
+}
+
+function getData(spreadsheetId, range) {
+    const params = {
+        spreadsheetId: spreadsheetId,
+        range: range,
+    };
+
+    gapi.client.sheets.spreadsheets.values.get(params)
+        .then((response) => {
+            const data = response.result.values;
+            console.log(data);
+        });
+}
+
+// Function to handle form submission for configuration
+const configForm = document.getElementById('configForm');
+configForm.addEventListener('submit', function (event) {
+    event.preventDefault();
+
+    // Get form values
+    const apiKey = document.getElementById('apiKey').value;
+    const clientId = document.getElementById('clientId').value;
+    const sheetsId = document.getElementById('sheetsId').value;
+
+    // Store values in local storage
+    localStorage.setItem('apiKey', apiKey);
+    localStorage.setItem('clientId', clientId);
+    localStorage.setItem('sheetsId', sheetsId);
+
+    // Display confirmation to user (optional)
+    showAlert('Configuration Saved');
+
+    // You can optionally reload the page or navigate to another tab here
+});
+
+// Function to load configuration from local storage if available
+function loadConfiguration() {
+    const apiKey = localStorage.getItem('apiKey');
+    const clientId = localStorage.getItem('clientId');
+    const sheetsId = localStorage.getItem('sheetsId');
+
+    // Set input values if they exist in local storage
+    if (apiKey) {
+        document.getElementById('apiKey').value = apiKey;
+    }
+    if (clientId) {
+        document.getElementById('clientId').value = clientId;
+    }
+    if (sheetsId) {
+        document.getElementById('sheetsId').value = sheetsId;
+    }
+}
+
+// Call loadConfiguration when the config tab is shown
+document.getElementById('config-tab').addEventListener('shown.bs.tab', function () {
+    loadConfiguration();
+});
 
 loadExistingData();
 
