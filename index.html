@@ -86,6 +86,7 @@
 </head>
 
 <body class="container">
+
     <div id="alertContainer" class="alert alert-success alert-dismissible fade show" role="alert"
         style="display: none;">
         <span id="alertMessage"></span>
@@ -176,8 +177,21 @@
 
         <!-- Configuration tab content -->
         <div class="tab-pane fade" id="config" role="tabpanel" aria-labelledby="config-tab">
-            <p>Configuration settings will be added here in the future.</p>
+            <form id="configForm" class="mb-4">
+                <div class="form-group">
+                    <label for="salesforceEndpoint">Salesforce Endpoint:</label>
+                    <input type="text" class="form-control" id="salesforceEndpoint" name="salesforceEndpoint">
+                </div>
+                <div class="form-group">
+                    <label for="environment">Environment:</label>
+                    <input type="text" class="form-control" id="environment" name="environment">
+                </div>
+                <div class="button-container">
+                    <button id="retrieveBackupDataBtn" class="btn btn-primary" disabled>Retrieve Backup Data</button>
+                </div>
+            </form>
         </div>
+
     </div>
 
     <script src="./script.js"></script>

@@ -1,0 +1,23 @@
+###
+POST https://milliways-dev-ed.develop.my.salesforce-sites.com/services/apexrest/healthtracker/ HTTP/1.1
+Content-Type: application/json
+
+{
+    "environment": "Test",
+    "data": "H4sIAAAAAAAAA0tJLS4BAAx/f9gEAAAA"
+}
+
+###
+GET https://milliways-dev-ed.develop.my.salesforce-sites.com/services/apexrest/healthtracker/Test HTTP/1.1
+
+###
+POST https://milliways-dev-ed.develop.my.salesforce-sites.com/services/apexrest/healthtracker/ HTTP/1.1
+Content-Type: application/json
+
+{
+    "environment": "Production",
+    "data": "H4sIAAAAAAAAA0tJLS4BAAx/f9gEAAAA"
+}
+
+###
+GET https://milliways-dev-ed.develop.my.salesforce-sites.com/services/apexrest/healthtracker/Production HTTP/1.1

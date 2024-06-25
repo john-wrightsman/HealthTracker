@@ -288,3 +288,44 @@ loadExistingData();
 document.getElementById('chart-tab').addEventListener('shown.bs.tab', function (e) {
     healthChart.resize();
 });
+
+document.addEventListener("DOMContentLoaded", function () {
+    // Load endpoint and environment from localStorage
+    const endpointInput = document.getElementById("salesforceEndpoint");
+    const environmentInput = document.getElementById("environment");
+    const retrieveBackupDataBtn = document.getElementById("retrieveBackupDataBtn");
+
+    const savedEndpoint = localStorage.getItem("salesforceEndpoint");
+    const savedEnvironment = localStorage.getItem("environment");
+
+    if (savedEndpoint) {
+        endpointInput.value = savedEndpoint;
+    }
+
+    if (savedEnvironment) {
+        environmentInput.value = savedEnvironment;
+    }
+
+    // Enable the button if both fields are populated
+    function checkInputs() {
+        if (endpointInput.value && environmentInput.value) {
+            retrieveBackupDataBtn.disabled = false;
+        } else {
+            retrieveBackupDataBtn.disabled = true;
+        }
+    }
+
+    // Check inputs on page load
+    checkInputs();
+
+    // Add event listeners to inputs to check their values
+    endpointInput.addEventListener("input", checkInputs);
+    environmentInput.addEventListener("input", checkInputs);
+
+    // Add event listener to the button to save values to localStorage
+    retrieveBackupDataBtn.addEventListener("click", function () {
+        localStorage.setItem("salesforceEndpoint", endpointInput.value);
+        localStorage.setItem("environment", environmentInput.value);
+        alert("Endpoint and Environment have been saved to localStorage.");
+    });
+});
