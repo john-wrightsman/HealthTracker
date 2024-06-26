@@ -386,10 +386,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         fetch(endpointUrl, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-            },
+            method: 'GET'
         })
             .then(response => {
                 if (!response.ok) {
