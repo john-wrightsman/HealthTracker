@@ -378,17 +378,14 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         // Ensure the endpoint URL ends with a slash if it doesn't already have one
-        const endpointUrl = endpoint.endsWith('/') ? endpoint : `${endpoint}/`;
-
-        // Construct the final URL for the GET call
-        const getUrl = `${endpointUrl}services/apexrest/healthtracker/${environment}`;
+        const endpointUrl = endpoint.endsWith('/') ? endpoint : `${endpoint}/${environment}`;
 
         const confirmation = confirm("This action will overwrite existing local data. Continue?");
         if (!confirmation) {
             return;
         }
 
-        fetch(getUrl, {
+        fetch(endpointUrl, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
