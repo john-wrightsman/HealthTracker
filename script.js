@@ -291,7 +291,8 @@ function closeAlert() {
 
 function compressData(data) {
     const jsonString = JSON.stringify(data);
-    const compressedData = LZString.compressToUTF16(jsonString);
+    // const compressedData = LZString.compressToUTF16(jsonString);
+    const compressedData = LZString.compressToEncodedURIComponent(jsonString);
     return compressedData;
 }
 
@@ -308,7 +309,7 @@ function postDataToEndpoint(data) {
             },
             body: {
                 'environment': environment,
-                'compressedData': JSON.stringify({ compressedData })
+                'compressedData': compressedData
             }
         })
             .then(response => {
