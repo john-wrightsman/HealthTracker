@@ -368,7 +368,7 @@ document.addEventListener("DOMContentLoaded", function () {
     endpointInput.addEventListener("input", checkInputs);
     environmentInput.addEventListener("input", checkInputs);
 
-    retrieveBackupDataBtn.addEventListener("click", function () {
+    retrieveBackupDataBtn.addEventListener("click", async function () {
         const endpoint = localStorage.getItem("salesforceEndpoint");
         const environment = localStorage.getItem("environment");
 
@@ -386,40 +386,30 @@ document.addEventListener("DOMContentLoaded", function () {
             return;
         }
 
-        fetch(fetchUrl, {
-            method: 'GET'
-        })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Failed to fetch backup data.');
-                }
-                return response.clone().text();
-            })
-            .then(data => {
-                console.log(data);
-                console.log(JSON.stringify(data));
-                /*
-                // Decompress and parse the fetched data
-                const decompressedData = LZString.decompressFromEncodedURIComponent(data.compressedData);
-                if (!decompressedData) {
-                    throw new Error('Failed to decompress data.');
-                }
-                const parsedData = JSON.parse(decompressedData);
+        const response = await fetch(fetchUrl, { method: 'GET' });
 
-                // Overwrite local storage with fetched data
-                localStorage.setItem('healthData', JSON.stringify(parsedData));
+        if (!response.ok) {
+            throw new Error('Failed to fetch backup data.');
+        }
 
-                // Update UI to reflect fetched data
-                const selectedRange = getSelectedRange();
-                setRange(selectedRange);
-                populateTable(parsedData);
-                showAlert('Backup data retrieved successfully.');
-                */
-            })
-            .catch(error => {
-                console.error('Error fetching backup data:', error);
-                alert('Failed to retrieve backup data. Check console for details.');
-            });
+        const responseText = await response.text();
+        console.log('Response Text:', responseText);
+
+        const data = JSON.parse(responseText);
+        console.log('Parsed Data:', data);
+
+        // Decompress and parse the fetched data
+        const decompressedData = LZString.decompressFromEncodedURIComponent(data.Data__c);
+        const parsedData = JSON.parse(decompressedData);
+
+        // Overwrite local storage with fetched data
+        localStorage.setItem('healthData', JSON.stringify(parsedData));
+
+        // Update UI to reflect fetched data
+        const selectedRange = getSelectedRange();
+        setRange(selectedRange);
+        populateTable(parsedData);
+        showAlert('Backup data retrieved successfully.');
     });
 
 
