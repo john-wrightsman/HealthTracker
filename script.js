@@ -341,8 +341,8 @@ document.addEventListener("DOMContentLoaded", function () {
     const environmentInput = document.getElementById("environment");
     const retrieveBackupDataBtn = document.getElementById("retrieveBackupDataBtn");
 
-    const savedEndpoint = localStorage.getItem("salesforceEndpoint");
-    const savedEnvironment = localStorage.getItem("environment");
+    let savedEndpoint = localStorage.getItem("salesforceEndpoint");
+    let savedEnvironment = localStorage.getItem("environment");
 
     if (savedEndpoint) {
         endpointInput.value = savedEndpoint;
@@ -354,6 +354,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Enable the button if both fields are populated
     function checkInputs() {
+        localStorage.setItem('salesforceEndpoint', endpointInput.value);
+        localStorage.setItem('environment', environmentInput.value);
         if (endpointInput.value && environmentInput.value) {
             retrieveBackupDataBtn.disabled = false;
         } else {
