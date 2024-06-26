@@ -292,7 +292,7 @@ function closeAlert() {
 function compressData(data) {
     const jsonString = JSON.stringify(data);
     // const compressedData = LZString.compressToUTF16(jsonString);
-    const compressedData = LZString.compressToEncodedURIComponent(jsonString);
+    const compressedData = LZString.compressToUTF16(jsonString);
     return compressedData;
 }
 
@@ -300,6 +300,7 @@ function postDataToEndpoint(data) {
     const endpoint = localStorage.getItem("salesforceEndpoint");
     const environment = localStorage.getItem("environment");
     const compressedData = compressData(data);
+
     let requestBody = {
         method: 'POST',
         headers: {
@@ -310,8 +311,6 @@ function postDataToEndpoint(data) {
             'compressedData': compressedData
         })
     }
-
-    console.log('requestBody', requestBody);
 
     if (endpoint && environment) {
         fetch(endpoint, requestBody)
@@ -369,10 +368,52 @@ document.addEventListener("DOMContentLoaded", function () {
     endpointInput.addEventListener("input", checkInputs);
     environmentInput.addEventListener("input", checkInputs);
 
-    // Add event listener to the button to save values to localStorage
     retrieveBackupDataBtn.addEventListener("click", function () {
-        localStorage.setItem("salesforceEndpoint", endpointInput.value);
-        localStorage.setItem("environment", environmentInput.value);
-        alert("Endpoint and Environment have been saved to localStorage.");
+        const endpoint = localStorage.getItem("salesforceEndpoint");
+        const environment = localStorage.getItem("environment");
+
+        if (!endpoint || !environment) {
+            alert("Please set Salesforce Endpoint and Environment first.");
+            return;
+        }
+
+        const confirmation = confirm("This action will overwrite existing local data. Continue?");
+        if (!confirmation) {
+            return;
+        }
+
+        fetch(endpoint, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Failed to fetch backup data.');
+                }
+                return response.json();
+            })
+            .then(data => {
+                // Decompress and parse the fetched data
+                const decompressedData = LZString.decompressFromEncodedURIComponent(data.compressedData);
+                const parsedData = JSON.parse(decompressedData);
+
+                // Overwrite local storage with fetched data
+                localStorage.setItem('healthData', JSON.stringify(parsedData));
+
+                // Update UI to reflect fetched data
+                const selectedRange = getSelectedRange();
+                setRange(selectedRange);
+                populateTable(parsedData);
+                showAlert('Backup data retrieved successfully.');
+
+                // Optionally, you can add further handling or logging here
+            })
+            .catch(error => {
+                console.error('Error fetching backup data:', error);
+                alert('Failed to retrieve backup data. Check console for details.');
+            });
     });
+
 });
