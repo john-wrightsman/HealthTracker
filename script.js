@@ -189,7 +189,7 @@ form.addEventListener('submit', function (event) {
     localStorage.setItem('healthData', JSON.stringify(storedData));
 
     // POST the fresh data to the endpoint if conditions are met
-    postDataToEndpoint();
+    postDataToEndpoint(storedData);
 
     selectedRange = getSelectedRange();
     setRange(selectedRange);
@@ -249,7 +249,7 @@ function deleteRecord(date) {
         localStorage.setItem('healthData', JSON.stringify(storedData));
 
         // POST the fresh data to the endpoint if conditions are met
-        postDataToEndpoint();
+        postDataToEndpoint(storedData);
 
         selectedRange = getSelectedRange();
         setRange(selectedRange);
@@ -295,7 +295,7 @@ function compressData(data) {
     return compressedData;
 }
 
-function postDataToEndpoint() {
+function postDataToEndpoint(data) {
     const endpoint = localStorage.getItem("salesforceEndpoint");
     const environment = localStorage.getItem("environment");
     const compressedData = compressData(data);
