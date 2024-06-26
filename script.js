@@ -393,9 +393,12 @@ document.addEventListener("DOMContentLoaded", function () {
                 if (!response.ok) {
                     throw new Error('Failed to fetch backup data.');
                 }
-                return response.json();
+                return response.text();
             })
             .then(data => {
+                console.log(data);
+                console.log(JSON.stringify(data));
+
                 // Decompress and parse the fetched data
                 const decompressedData = LZString.decompressFromEncodedURIComponent(data.compressedData);
                 if (!decompressedData) {
