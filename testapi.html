@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Salesforce API Test</title>
+</head>
+
+<body>
+    <h1>Salesforce API Test</h1>
+    <button id="fetchDataBtn">Fetch Data</button>
+
+    <script>
+        document.getElementById("fetchDataBtn").addEventListener("click", async function () {
+            const fetchUrl = "https://milliways-dev-ed.develop.my.salesforce-sites.com/services/apexrest/healthtracker/Tracker";
+
+            try {
+                const response = await fetch(fetchUrl, { method: 'GET' });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const responseText = await response.text();
+                console.log('Response Text:', responseText);
+            } catch (error) {
+                console.error('Fetch error:', error);
+                alert(`Fetch error: ${error.message}`);
+            }
+        });
+    </script>
+</body>
+
+</html>
