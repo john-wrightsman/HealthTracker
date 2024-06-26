@@ -16,7 +16,9 @@
             const fetchUrl = "https://milliways-dev-ed.develop.my.salesforce-sites.com/services/apexrest/healthtracker/Test";
 
             try {
+                console.log('making request');
                 const response = await fetch(fetchUrl, { method: 'GET' });
+                console.log('request made');
 
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
