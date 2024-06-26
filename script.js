@@ -388,6 +388,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         const response = await fetch(fetchUrl, { method: 'GET' });
 
+        debugger;
         if (!response.ok) {
             throw new Error('Failed to fetch backup data.');
         }
@@ -398,18 +399,18 @@ document.addEventListener("DOMContentLoaded", function () {
         const data = JSON.parse(responseText);
         console.log('Parsed Data:', data);
 
-        // Decompress and parse the fetched data
-        const decompressedData = LZString.decompressFromEncodedURIComponent(data.Data__c);
-        const parsedData = JSON.parse(decompressedData);
+        // // Decompress and parse the fetched data
+        // const decompressedData = LZString.decompressFromEncodedURIComponent(data.Data__c);
+        // const parsedData = JSON.parse(decompressedData);
 
-        // Overwrite local storage with fetched data
-        localStorage.setItem('healthData', JSON.stringify(parsedData));
+        // // Overwrite local storage with fetched data
+        // localStorage.setItem('healthData', JSON.stringify(parsedData));
 
-        // Update UI to reflect fetched data
-        const selectedRange = getSelectedRange();
-        setRange(selectedRange);
-        populateTable(parsedData);
-        showAlert('Backup data retrieved successfully.');
+        // // Update UI to reflect fetched data
+        // const selectedRange = getSelectedRange();
+        // setRange(selectedRange);
+        // populateTable(parsedData);
+        // showAlert('Backup data retrieved successfully.');
     });
 
 
