@@ -289,9 +289,16 @@ function closeAlert() {
     }, 150); // Match this to the Bootstrap transition duration
 }
 
+function compressData(data) {
+    const jsonString = JSON.stringify(data);
+    const compressedData = LZString.compressToUTF16(jsonString);
+    return compressedData;
+}
+
 function postDataToEndpoint() {
     const endpoint = localStorage.getItem("salesforceEndpoint");
     const environment = localStorage.getItem("environment");
+    const compressedData = compressData(data);
 
     if (endpoint && environment) {
         fetch(endpoint, {
@@ -300,7 +307,7 @@ function postDataToEndpoint() {
                 'Content-Type': 'application/json',
                 'Environment': environment
             },
-            body: JSON.stringify(storedData)
+            body: JSON.stringify({ compressedData })
         })
             .then(response => {
                 response.json()
