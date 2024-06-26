@@ -386,9 +386,13 @@ document.addEventListener("DOMContentLoaded", function () {
             return;
         }
 
-        const response = await fetch(fetchUrl, { method: 'GET' });
+        let response;
+        try {
+            response = await fetch(fetchUrl, { method: 'GET' });
+        } catch (error) {
+            console.log('ERROR!:', error);
+        }
 
-        debugger;
         if (!response.ok) {
             throw new Error('Failed to fetch backup data.');
         }
