@@ -300,18 +300,21 @@ function postDataToEndpoint(data) {
     const endpoint = localStorage.getItem("salesforceEndpoint");
     const environment = localStorage.getItem("environment");
     const compressedData = compressData(data);
+    let requestBody = {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: {
+            'environment': environment,
+            'compressedData': compressedData
+        }
+    }
+
+    console.log('requestBody', requestBody);
 
     if (endpoint && environment) {
-        fetch(endpoint, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: {
-                'environment': environment,
-                'compressedData': compressedData
-            }
-        })
+        fetch(endpoint, requestBody)
             .then(response => {
                 response.json()
             })
