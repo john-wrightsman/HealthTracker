@@ -378,7 +378,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         // Ensure the endpoint URL ends with a slash if it doesn't already have one
-        const endpointUrl = endpoint.endsWith('/') ? endpoint : `${endpoint}/${environment}`;
+        const endpointUrl = (endpoint.endsWith('/') ? endpoint : `${endpoint}`) + environment
 
         const confirmation = confirm("This action will overwrite existing local data. Continue?");
         if (!confirmation) {
