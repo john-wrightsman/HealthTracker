@@ -4,7 +4,7 @@ Content-Type: application/json
 
 {
     "environment": "Test",
-    "data": "H4sIAAAAAAAAA0tJLS4BAAx/f9gEAAAA"
+    "compressedData": "NobwRAJghgLgpmAXGATABhQFgLRoGzYoCsYANGAM4CeFMA9gDYCWAxkmAIwoDMZkTUWo1btuKDnwDucJgHMAFjHZdeAXwC6QA"
 }
 
 ###
@@ -16,7 +16,7 @@ Content-Type: application/json
 
 {
     "environment": "Production",
-    "data": "H4sIAAAAAAAAA0tJLS4BAAx/f9gEAAAA"
+    "compressedData": "H4sIAAAAAAAAA0tJLS4BAAx/f9gEAAAA"
 }
 
 ###

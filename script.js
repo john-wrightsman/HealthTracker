@@ -305,10 +305,10 @@ function postDataToEndpoint(data) {
         headers: {
             'Content-Type': 'application/json',
         },
-        body: {
+        body: JSON.stringify({
             'environment': environment,
             'compressedData': compressedData
-        }
+        })
     }
 
     console.log('requestBody', requestBody);
