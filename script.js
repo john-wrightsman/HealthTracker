@@ -393,12 +393,12 @@ document.addEventListener("DOMContentLoaded", function () {
                 if (!response.ok) {
                     throw new Error('Failed to fetch backup data.');
                 }
-                return response.text();
+                return response.clone().text();
             })
             .then(data => {
                 console.log(data);
                 console.log(JSON.stringify(data));
-
+                /*
                 // Decompress and parse the fetched data
                 const decompressedData = LZString.decompressFromEncodedURIComponent(data.compressedData);
                 if (!decompressedData) {
@@ -414,6 +414,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 setRange(selectedRange);
                 populateTable(parsedData);
                 showAlert('Backup data retrieved successfully.');
+                */
             })
             .catch(error => {
                 console.error('Error fetching backup data:', error);
