@@ -378,14 +378,15 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         // Ensure the endpoint URL ends with a slash if it doesn't already have one
-        const endpointUrl = (endpoint.endsWith('/') ? endpoint : `${endpoint}`) + environment
+        const endpointUrl = endpoint.endsWith('/') ? endpoint : `${endpoint}/`;
+        const fetchUrl = endpointUrl + environment;
 
         const confirmation = confirm("This action will overwrite existing local data. Continue?");
         if (!confirmation) {
             return;
         }
 
-        fetch(endpointUrl, {
+        fetch(fetchUrl, {
             method: 'GET'
         })
             .then(response => {
@@ -397,6 +398,9 @@ document.addEventListener("DOMContentLoaded", function () {
             .then(data => {
                 // Decompress and parse the fetched data
                 const decompressedData = LZString.decompressFromEncodedURIComponent(data.compressedData);
+                if (!decompressedData) {
+                    throw new Error('Failed to decompress data.');
+                }
                 const parsedData = JSON.parse(decompressedData);
 
                 // Overwrite local storage with fetched data
@@ -407,13 +411,12 @@ document.addEventListener("DOMContentLoaded", function () {
                 setRange(selectedRange);
                 populateTable(parsedData);
                 showAlert('Backup data retrieved successfully.');
-
-                // Optionally, you can add further handling or logging here
             })
             .catch(error => {
                 console.error('Error fetching backup data:', error);
                 alert('Failed to retrieve backup data. Check console for details.');
             });
     });
+
 
 });
