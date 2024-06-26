@@ -390,7 +390,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
         let response;
         try {
+            console.log('making request');
             response = await fetch(fetchUrl, { method: 'GET' });
+            console.log('request made');
         } catch (error) {
             console.log('ERROR!:', error);
         }
