@@ -371,52 +371,62 @@ document.addEventListener("DOMContentLoaded", function () {
     environmentInput.addEventListener("input", checkInputs);
 
     retrieveBackupDataBtn.addEventListener("click", async function () {
-        const endpoint = localStorage.getItem("salesforceEndpoint");
-        const environment = localStorage.getItem("environment");
+        try {
+            const endpoint = localStorage.getItem("salesforceEndpoint");
+            const environment = localStorage.getItem("environment");
 
-        if (!endpoint || !environment) {
-            alert("Please set Salesforce Endpoint and Environment first.");
-            return;
+            if (!endpoint || !environment) {
+                alert("Please set Salesforce Endpoint and Environment first.");
+                return;
+            }
+
+            // Ensure the endpoint URL ends with a slash if it doesn't already have one
+            const endpointUrl = endpoint.endsWith('/') ? endpoint : `${endpoint}/`;
+            let fetchUrl = endpointUrl + environment;
+
+            // This url works on my testapi.html page
+            let fetchUrlWorks = "https://milliways-dev-ed.develop.my.salesforce-sites.com/services/apexrest/healthtracker/Test";
+
+            if (!fetchUrl === fetchUrlWorks) {
+                alert("The fetchUrls are different");
+                return;
+            }
+
+            const confirmation = confirm("This action will overwrite existing local data. Continue?");
+            if (!confirmation) {
+                return;
+            }
+
+            console.log('making request');
+            const response = await fetch(fetchUrl, { method: 'GET' });
+            console.log('request made');
+
+            if (!response.ok) {
+                throw new Error('Failed to fetch backup data.');
+            }
+
+            const responseText = await response.text();
+            console.log('Response Text:', responseText);
+
+            const data = JSON.parse(responseText);
+            console.log('Parsed Data:', data);
+
+            // // Decompress and parse the fetched data
+            // const decompressedData = LZString.decompressFromEncodedURIComponent(data.Data__c);
+            // const parsedData = JSON.parse(decompressedData);
+
+            // // Overwrite local storage with fetched data
+            // localStorage.setItem('healthData', JSON.stringify(parsedData));
+
+            // // Update UI to reflect fetched data
+            // const selectedRange = getSelectedRange();
+            // setRange(selectedRange);
+            // populateTable(parsedData);
+            // showAlert('Backup data retrieved successfully.');
+        catch (error) {
+            console.error('Fetch error:', error);
+            alert(`Fetch error: ${error.message}`);
         }
-
-        // Ensure the endpoint URL ends with a slash if it doesn't already have one
-        const endpointUrl = endpoint.endsWith('/') ? endpoint : `${endpoint}/`;
-        let fetchUrl = endpointUrl + environment;
-
-        let fetchUrlWorks = "https://milliways-dev-ed.develop.my.salesforce-sites.com/services/apexrest/healthtracker/Test";
-
-
-        const confirmation = confirm("This action will overwrite existing local data. Continue?");
-        if (!confirmation) {
-            return;
-        }
-
-        console.log('making request');
-        const response = await fetch(fetchUrl, { method: 'GET' });
-        console.log('request made');
-
-        if (!response.ok) {
-            throw new Error('Failed to fetch backup data.');
-        }
-
-        const responseText = await response.text();
-        console.log('Response Text:', responseText);
-
-        const data = JSON.parse(responseText);
-        console.log('Parsed Data:', data);
-
-        // // Decompress and parse the fetched data
-        // const decompressedData = LZString.decompressFromEncodedURIComponent(data.Data__c);
-        // const parsedData = JSON.parse(decompressedData);
-
-        // // Overwrite local storage with fetched data
-        // localStorage.setItem('healthData', JSON.stringify(parsedData));
-
-        // // Update UI to reflect fetched data
-        // const selectedRange = getSelectedRange();
-        // setRange(selectedRange);
-        // populateTable(parsedData);
-        // showAlert('Backup data retrieved successfully.');
     });
 
 
