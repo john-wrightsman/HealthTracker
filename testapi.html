@@ -32,7 +32,7 @@
                 console.log('Cleaned Response Text:', cleanedData);
 
                 // Parse the JSON string
-                const parsedData = JSON.parse(cleanedData);
+                const parsedData = JSON.parse(JSON.parse(cleanedData));
                 console.log('Parsed Data:', parsedData);
 
                 // Decompress and parse the fetched data
