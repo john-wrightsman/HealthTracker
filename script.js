@@ -423,7 +423,7 @@ document.addEventListener("DOMContentLoaded", function () {
             // setRange(selectedRange);
             // populateTable(parsedData);
             // showAlert('Backup data retrieved successfully.');
-        catch (error) {
+        } catch (error) {
             console.error('Fetch error:', error);
             alert(`Fetch error: ${error.message}`);
         }
