@@ -16,9 +16,9 @@
             const fetchUrl = "https://milliways-dev-ed.develop.my.salesforce-sites.com/services/apexrest/healthtracker/Test";
 
             try {
-                console.log('making request');
+                console.log('Making request to:', fetchUrl);
                 const response = await fetch(fetchUrl, { method: 'GET' });
-                console.log('request made');
+                console.log('Request made');
 
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
@@ -26,6 +26,29 @@
 
                 const responseText = await response.text();
                 console.log('Response Text:', responseText);
+
+                // Strip out <response> tags if present
+                const cleanedData = responseText.replace(/<\/?response>/g, '');
+                console.log('Cleaned Response Text:', cleanedData);
+
+                // Parse the JSON string
+                const parsedData = JSON.parse(cleanedData);
+                console.log('Parsed Data:', parsedData);
+
+                // Decompress and parse the fetched data
+                const decompressedData = LZString.decompressFromEncodedURIComponent(parsedData.Data__c);
+                const parsedHealthData = JSON.parse(decompressedData);
+                console.log('Decompressed and Parsed Health Data:', parsedHealthData);
+
+                // Overwrite local storage with fetched data
+                localStorage.setItem('healthData', JSON.stringify(parsedHealthData));
+                console.log('Health data saved to localStorage');
+
+                // Update UI to reflect fetched data
+                const selectedRange = getSelectedRange();
+                setRange(selectedRange);
+                populateTable(parsedHealthData);
+                showAlert('Backup data retrieved successfully.');
             } catch (error) {
                 console.error('Fetch error:', error);
                 alert(`Fetch error: ${error.message}`);
