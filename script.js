@@ -425,6 +425,7 @@ document.addEventListener("DOMContentLoaded", function () {
             // showAlert('Backup data retrieved successfully.');
         } catch (error) {
             debugger;
+            console.warn('Error keys:', Object.keys(error));
             console.error('Fetch error:', error);
             alert(`Fetch error: ${error.message}`);
         }
