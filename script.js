@@ -406,7 +406,6 @@ document.addEventListener("DOMContentLoaded", function () {
             const responseText = await response.text();
 
             const data = JSON.parse(JSON.parse(responseText));
-            console.log('Parsed Data:', data);
 
             // Decompress and parse the fetched data
             const decompressedData = LZString.decompressFromUTF16(data.Data__c);
