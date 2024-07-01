@@ -397,23 +397,20 @@ document.addEventListener("DOMContentLoaded", function () {
                 return;
             }
 
-            console.log('making request');
             const response = await fetch(fetchUrl, { method: 'GET' });
-            console.log('request made');
 
             if (!response.ok) {
                 throw new Error('Failed to fetch backup data.');
             }
 
             const responseText = await response.text();
-            console.log('Response Text:', responseText);
 
             const data = JSON.parse(responseText);
             console.log('Parsed Data:', data);
 
-            // // Decompress and parse the fetched data
-            // const decompressedData = LZString.decompressFromEncodedURIComponent(data.Data__c);
-            // const parsedData = JSON.parse(decompressedData);
+            // Decompress and parse the fetched data
+            const decompressedData = LZString.decompressFromEncodedURIComponent(data.Data__c);
+            const parsedData = JSON.parse(decompressedData);
 
             // // Overwrite local storage with fetched data
             // localStorage.setItem('healthData', JSON.stringify(parsedData));
