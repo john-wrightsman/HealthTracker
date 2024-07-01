@@ -411,14 +411,14 @@ document.addEventListener("DOMContentLoaded", function () {
             const decompressedData = LZString.decompressFromUTF16(data.Data__c);
             const parsedData = JSON.parse(decompressedData);
 
-            // // Overwrite local storage with fetched data
-            // localStorage.setItem('healthData', JSON.stringify(parsedData));
+            // Overwrite local storage with fetched data
+            localStorage.setItem('healthData', JSON.stringify(parsedData));
 
-            // // Update UI to reflect fetched data
-            // const selectedRange = getSelectedRange();
-            // setRange(selectedRange);
-            // populateTable(parsedData);
-            // showAlert('Backup data retrieved successfully.');
+            // Update UI to reflect fetched data
+            const selectedRange = getSelectedRange();
+            setRange(selectedRange);
+            populateTable(parsedData);
+            showAlert('Backup data retrieved successfully.');
         } catch (error) {
             debugger;
             console.warn('Error keys:', Object.keys(error));
