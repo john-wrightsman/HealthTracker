@@ -1,2 +1,0 @@
-- [ ] put elements in tabs
-- [ ] make it so swiping left or right switches tabs

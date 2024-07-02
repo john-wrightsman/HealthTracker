@@ -384,14 +384,6 @@ document.addEventListener("DOMContentLoaded", function () {
             const endpointUrl = endpoint.endsWith('/') ? endpoint : `${endpoint}/`;
             let fetchUrl = endpointUrl + environment;
 
-            // This url works on my testapi.html page
-            let fetchUrlWorks = "https://milliways-dev-ed.develop.my.salesforce-sites.com/services/apexrest/healthtracker/Test";
-
-            if (!fetchUrl === fetchUrlWorks) {
-                alert("The fetchUrls are different");
-                return;
-            }
-
             const confirmation = confirm("This action will overwrite existing local data. Continue?");
             if (!confirmation) {
                 return;
