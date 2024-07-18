@@ -2,20 +2,22 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "Commit and Push",
+            "label": "Update Version, Commit and Push",
             "type": "shell",
-            "command": "git",
+            "command": "powershell",
             "args": [
-                "add",
-                ".",
-                "&&",
-                "git",
-                "commit",
-                "-m",
-                "Auto-commit",
-                "&&",
-                "git",
-                "push"
+                "-NoProfile",
+                "-ExecutionPolicy",
+                "Bypass",
+                "-Command",
+                "& {",
+                "$versionFile = 'version.html';",
+                "$date = Get-Date -Format 'yyyy-MM-dd HH:mm:ss';",
+                "Set-Content -Path \"$versionFile\" -Value \"Version: $date\";",
+                "git add .;",
+                "git commit -m 'Update version to $date';",
+                "git push;",
+                "}"
             ],
             "group": {
                 "kind": "build",

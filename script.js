@@ -419,5 +419,14 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 
+    function loadVersion() {
+        fetch('./version.html')
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('version-container').innerHTML = data;
+            })
+            .catch(error => console.error('Error loading version:', error));
+    }
 
+    document.addEventListener('DOMContentLoaded', loadVersion);
 });
