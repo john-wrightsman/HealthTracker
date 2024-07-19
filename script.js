@@ -419,6 +419,41 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 
+    document.getElementById('exportCsvBtn').addEventListener('click', function () {
+        exportTableToCSV('health_data.csv');
+    });
+
+    function exportTableToCSV(filename) {
+        const csv = [];
+        const rows = document.querySelectorAll('#dataTable tr');
+
+        for (const row of rows) {
+            const cols = row.querySelectorAll('td, th');
+            const rowData = [];
+
+            for (const col of cols) {
+                rowData.push(col.innerText);
+            }
+
+            csv.push(rowData.join(','));
+        }
+
+        downloadCSV(csv.join('\n'), filename);
+    }
+
+    function downloadCSV(csv, filename) {
+        const csvFile = new Blob([csv], { type: 'text/csv' });
+        const downloadLink = document.createElement('a');
+
+        downloadLink.download = filename;
+        downloadLink.href = window.URL.createObjectURL(csvFile);
+        downloadLink.style.display = 'none';
+
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+        document.body.removeChild(downloadLink);
+    }
+
     function loadVersion() {
         fetch('./version.html')
             .then(response => response.text())
