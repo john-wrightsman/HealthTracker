@@ -409,7 +409,21 @@ document.addEventListener("DOMContentLoaded", function () {
 
             const responseText = await response.text();
 
+            // Check for empty response
+            if (!responseText) {
+                console.log('No data received.');
+                alert('No backup data found.');
+                return;
+            }
+
             const data = JSON.parse(JSON.parse(responseText));
+
+            // Check if data is empty
+            if (!data || Object.keys(data).length === 0) {
+                console.log('Empty data object received.');
+                alert('No backup data found.');
+                return;
+            }
 
             // Decompress and parse the fetched data
             const decompressedData = LZString.decompressFromUTF16(data.Data__c);
