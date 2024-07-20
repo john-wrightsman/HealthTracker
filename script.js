@@ -419,7 +419,7 @@ document.addEventListener("DOMContentLoaded", function () {
             const data = JSON.parse(JSON.parse(responseText));
 
             // Check if data is empty
-            if (!data || Object.keys(data).length === 0) {
+            if (!data || Object.keys(data).length === 0 || !Object.keys(data).includes('Data__c')) {
                 console.log('Empty data object received.');
                 alert('No backup data found.');
                 return;
