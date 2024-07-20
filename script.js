@@ -8,7 +8,7 @@ const healthChart = new Chart(
                 {
                     label: 'Systolic',
                     data: [],
-                    borderColor: 'red',
+                    borderColor: '#FF0000',
                     backgroundColor: 'rgba(255, 0, 0, 0.2)',
                     fill: false,
                     lineTension: 0.1
@@ -16,7 +16,7 @@ const healthChart = new Chart(
                 {
                     label: 'Diastolic',
                     data: [],
-                    borderColor: 'blue',
+                    borderColor: '#0000FF',
                     backgroundColor: 'rgba(0, 0, 255, 0.2)',
                     fill: false,
                     lineTension: 0.1
@@ -24,7 +24,7 @@ const healthChart = new Chart(
                 {
                     label: 'Weight',
                     data: [],
-                    borderColor: 'green',
+                    borderColor: '#008000',
                     backgroundColor: 'rgba(0, 128, 0, 0.2)',
                     fill: false,
                     lineTension: 0.1
@@ -36,7 +36,7 @@ const healthChart = new Chart(
                 y: {
                     beginAtZero: false,
                     grid: {
-                        color: 'black'
+                        color: '#000000'
                     }
                 }
             },
@@ -53,6 +53,7 @@ const healthChart = new Chart(
         }
     }
 );
+
 
 function getSelectedRange() {
     return parseInt(localStorage.getItem('selectedRange')) || 90;
@@ -150,6 +151,7 @@ function populateTable(data) {
         tableBody.appendChild(row);
     });
 }
+
 
 const storedData = JSON.parse(localStorage.getItem('healthData') || '[]');
 let selectedRange = getSelectedRange();
@@ -274,12 +276,22 @@ function showAlert(message) {
 
     alertMessage.textContent = message;
     alertContainer.style.display = 'block';
+    alertContainer.classList.add('show');
 
     // Automatically hide the alert after 3 seconds
     setTimeout(() => {
         closeAlert();
     }, 3000);
 }
+
+function closeAlert() {
+    const alertContainer = document.getElementById('alertContainer');
+    alertContainer.classList.remove('show'); // Remove the show class to close the alert
+    setTimeout(() => {
+        alertContainer.style.display = 'none';
+    }, 150); // Match this to the Bootstrap transition duration
+}
+
 
 function closeAlert() {
     const alertContainer = document.getElementById('alertContainer');
